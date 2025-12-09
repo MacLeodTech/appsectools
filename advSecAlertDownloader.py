@@ -148,11 +148,11 @@ def print_help():
 
     A .env file can be used to set environment variables for convenience.
             ``` .env
-            ADO_ORG=cantire
-            ADO_PROJECT=corp-ado-050
-            ADO_REPO=Demo-GHAzDO_Training
+            ADO_ORG=
+            ADO_PROJECT=
+            ADO_REPO=Demo
             ADO_BRANCH=develop
-            MAPPED_ADO_PAT=your_personal_access_token_here
+            MAPPED_ADO_PAT=<your_personal_access_token_here>
             ADO_API_VERSION=7.2-preview.1
             ```
 
