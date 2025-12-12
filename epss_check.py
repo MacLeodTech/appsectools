@@ -9,6 +9,7 @@ from operator import itemgetter
 import certifi
 import pandas as pd
 from colorama import Fore, Style, init
+from bs4 import BeautifulSoup
 
 
 def print_help():
@@ -47,8 +48,6 @@ def fetch_epss_data(cves):
     params = {"cve": cves}
 
     try:
-        # TODO: Handle SSL verification properly in production code
-        # , verify=certifi.where())#"assets/api.first.org.pem")
         response = requests.get(base_url, params=params, timeout=10)
         response.raise_for_status()
         return response.text
@@ -129,6 +128,39 @@ def createChartsFromEPSSData(epss_data):
     print(sep)
 
 
+def fetch_cvedetails_info(cve):
+    """
+    Query https://vulners.com/cve//<CVE>/ and return a dict with title and summary.
+    Raises RuntimeError on fetch/parsing errors, ValueError for empty input.
+    """
+    if not cve:
+        raise ValueError("CVE cannot be empty")
+
+    url = f"https://vulners.com/cve/{cve}/"
+
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
+        resp = requests.get(url, headers=headers,
+                            timeout=10, verify=certifi.where())
+        resp.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"Error fetching CVE details page: {e}")
+
+    soup = BeautifulSoup(resp.text, "html.parser")
+
+    # title element: <div class="h5 text-dark mb-2 fw-bold"></div>
+    title_el = soup.select_one("div.h5.text-dark.mb-2.fw-bold")
+    title = title_el.get_text(strip=True) if title_el else None
+
+    # summary element: <div id="cvedetailssummary" class="cvedetailssummary-text">
+    summary_el = soup.select_one(
+        "div#cvedetailssummary.cvedetailssummary-text")
+    summary = summary_el.get_text(" ", strip=True) if summary_el else None
+
+    return {"cve": cve, "url": url, "title": title, "summary": summary}
+
+
 def main():
     if any(arg in ("-h", "--help") for arg in sys.argv[1:]) or len(sys.argv) == 1:
         print_help()
@@ -138,6 +170,9 @@ def main():
         "-cve", type=str, help="The CVE ID(s) to check (comma separated, no spaces)")
     parser.add_argument(
         "-x", type=str, help="Extract CVEs from a CSV file and check their EPSS")
+    parser.add_argument("-d", "--details", dest="d",
+                        action=argparse.BooleanOptionalAction,
+                        help="Fetch additional CVE details from cvedetails.com")
     args = parser.parse_args()
 
     if args.cve:
@@ -163,6 +198,9 @@ def main():
                 print(f"Error: {e}")
         else:
             print("No CVEs found in the CSV file.")
+
+    if args.d:
+        fetch_cvedetails_info(args.cve)
 
 
 if __name__ == "__main__":

@@ -13,11 +13,11 @@ Code (READ)
 A .env file can be used to set environment variables for convenience.
 
 ```properties
-ADO_ORG=cantire
-ADO_PROJECT=corp-ado-050
-ADO_REPO=Demo-GHAzDO_Training
+ADO_ORG=<org>
+ADO_PROJECT=<Project Name>
+ADO_REPO=<Repo Name>
 ADO_BRANCH=develop
-MAPPED_ADO_PAT=<your_personal_access_token_here>
+MAPPED_ADO_PAT=<your_personal_access_token_here> # Needs read access to Adv Security
 ADO_API_VERSION=7.2-preview.1
 ```
 
@@ -50,14 +50,14 @@ python AdvSecAlertDownloader.py --pat PAT --org ORG --project PROJECT --repo REP
 #### Command Line Example
 
 ```shell
-python AdvSecAlertDownloader.py --org cantire --project corp-ado-050 --repo Demo_GHAzDO-Training --pat <PAT> --api-version 7.2-preview.1
+python AdvSecAlertDownloader.py --org <myorg> --project <myproj> --repo Demo --pat <PAT> --api-version 7.2-preview.1
 ```
 
 #### Command Line with All Repos
 
 ```shell
 #  Using the --repo all parameter will attempt to download all results for each repository in a project. Requires the branch parameter to be set.
-python advSecAlertDownloader.py --org myorg --project myproj --repo all --pat <PAT> --branch develop
+python advSecAlertDownloader.py --org <myorg> --project <myproj> --repo all --pat <PAT> --branch develop
 ```
 
 #### Using .env Example
@@ -65,14 +65,14 @@ python advSecAlertDownloader.py --org myorg --project myproj --repo all --pat <P
 ##### .env Contents
 
 ```properties
-ADO_ORG=cantire
-ADO_PROJECT=corp-ado-050
-#ADO_REPO=Demo-GHAzDO_Training
+ADO_ORG=<org>
+ADO_PROJECT=<Project Name>
+ADO_REPO=<Repo Name>
 ADO_BRANCH=develop
 ADO_API_VERSION=7.2-preview.1
 MAPPED_ADO_PAT=C4oyQ.....AZFO2eJQ
 ```
 
 ```shell
-python AdvSecAlertDownloader.py --repo Demo_GHAzDO-Training --pipeline Gated_Scan
+python AdvSecAlertDownloader.py --repo Demo --pipeline Gated_Scan
 ```
